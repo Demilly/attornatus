@@ -20,6 +20,7 @@ public interface PessoaService {
     List<EnderecoDto> listarEnderecos(Long pessoaId);
 
     void definirEnderecoPrincipal(Long pessoaId, Long enderecoId);
+
 }
 
 

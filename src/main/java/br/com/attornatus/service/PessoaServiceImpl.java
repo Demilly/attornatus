@@ -11,6 +11,7 @@ import br.com.attornatus.repository.PessoaRepository;
 import br.com.attornatus.service.exception.PessoaNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PessoaServiceImpl implements PessoaService {
 
     private final PessoaRepository pessoaRepository;
@@ -27,7 +29,20 @@ public class PessoaServiceImpl implements PessoaService {
 
     @Override
     public PessoaDto criarPessoa(PessoaDto pessoaDto) {
-        return pessoaMapper.toPessoaDto(pessoaRepository.save(pessoaMapper.toPessoa(pessoaDto)));
+
+        Pessoa novaPessoa = pessoaMapper.toPessoa(pessoaDto);
+
+        if (pessoaDto.getEnderecos() != null) {
+            novaPessoa.getEnderecos().clear();
+            pessoaDto.getEnderecos()
+                    .stream()
+                    .map(enderecoMapper::toEndereco)
+                    .forEach(novaPessoa::adicionarEndereco);
+        }
+
+        Pessoa pessoaSalva = pessoaRepository.save(novaPessoa);
+
+        return pessoaMapper.toPessoaDto(pessoaSalva);
     }
 
     @Override
@@ -58,7 +73,7 @@ public class PessoaServiceImpl implements PessoaService {
     public List<PessoaDto> listarPessoas() {
         List<Pessoa> pessoas = (List<Pessoa>) pessoaRepository.findAll();
         return pessoas.stream()
-                .map(pessoaMapper::toPessoaDto) // Usa o Mapper do MapStruct
+                .map(pessoaMapper::toPessoaDto)
                 .collect(Collectors.toList());
     }
 
@@ -84,7 +99,7 @@ public class PessoaServiceImpl implements PessoaService {
 
         if (pessoaExistente.isPresent()) {
             Pessoa pessoa = pessoaExistente.get();
-            List<Endereco> enderecos = pessoa.getEnderecos(); // Use o método correto
+            List<Endereco> enderecos = pessoa.getEnderecos();
 
             return enderecos.stream()
                     .map(enderecoMapper::toEnderecoDto)

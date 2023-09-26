@@ -10,5 +10,4 @@ public class EnderecoDto {
     private String numero;
     private String cidade;
     private boolean principal;
-    private PessoaDto pessoa;
 }
