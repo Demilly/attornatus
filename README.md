@@ -1,6 +1,5 @@
 # attornatus
 Desafio técnico
-evaluation
 Avaliação Desenvolvedor Back-end Attornatus
 
 Usando Spring boot, crie uma API simples para gerenciar Pessoas. Esta API deve permitir:
